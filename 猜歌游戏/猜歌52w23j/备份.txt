@@ -1,0 +1,209 @@
+///////////////////////////
+//作痢?者?：阰小?臧骸?同?学§
+//文?件t名?：阰猜?歌è.cpp
+///////////////////////////
+#include<windows.h>
+#include<mmsystem.h>
+#pragma comment(lib,"winmm.lib")//音?乐?播￥放?头?文?件t
+
+#include<cstring>
+#include<iostream>
+#include<stdio.h>//输?入?输?出?头?文?件t
+
+#include <graphics.h> //加ó载?图?像?库a
+
+#include<time.h>
+#include <stdlib.h>//随?机ú数簓生Θ?成é相à关?头?文?件t
+
+#include <fstream>
+
+using namespace std; //所ù有瓺的?标括?准?库a函ˉ数簓都?在ú标括?准?命ü名?空?间?std中D进?行D了?定¨义?
+
+#define graph_w 900
+#define graph_h 750 //设Θ?置?画-板?宽í度è高?度è 18:15
+#define sum 15// 题琣目?数簓
+
+void init(); // 初?始?化ˉ
+void Put__Music( int number ); // 播￥放?音?乐?
+void Put__ans( int number );//打洙?印?答鋏案?
+void Close__Music();//关?闭?音?乐?
+void Stop__Music();//暂Y停?音?乐?
+void Resume__Music();//继ì续?音?乐?
+int get_random_number(int l,int r); // 生Θ?成é随?机ú数簓
+void prepare_CD( int number ); //生Θ?成éCD
+void Put_Key( int number ); //生Θ?成é开a始?或ò暂Y停?
+void prepare();
+/////////////////////////////////////////////////声Θ?明÷需è要癮使?用?的?自?定¨义?函ˉ数簓
+DWORD WINAPI ThreadProcA(LPVOID lpParameter);
+int FLAG_ThreadProcA = 0;//线?程ìA是?否?开a启?
+DWORD ThreadA_CD ; //传?入?DC编括?号?
+/////////////////////////////////////////////////声Θ?明÷线?程ìA
+int cnt;//题琣目?数簓
+bool vis[100];//代洙?表括?歌è曲ú是?否?听瑈过y
+long long Time;//计?时骸?器÷
+IMAGE cover_img;/*全?局?缓o冲?*/
+
+int main( ) {  //主÷函ˉ数簓
+	init(); //初?始?化ˉ
+	prepare();//检ì测a是?否?开a始?
+	///////////////////////////////////////////////////////////////// 120 370 600 690  500 750 600 690
+	while(cnt--)
+	{		
+	IMAGE setting_img;
+	loadimage(&setting_img,_T("Img//游?戏·背?景°.png"),graph_w,graph_h);//加ó载?背?景°
+	putimage(0,0,&setting_img);//封面?背?景°
+/////////////////////////////////////////////////////////////////////////更ü换?背?景°
+	int Ran_Num=get_random_number(0,sum-1); //生Θ?成é随?机ú数簓
+	Put__Music(Ran_Num);
+	//Sleep(3000);
+	MOUSEMSG mouse;//鼠酣?标括?
+	int F=1;//是?否?结á束?
+	DWORD dwiTid = 0;
+	//ThreadA_CD = rand() % 5;
+	ThreadA_CD = 0;
+	Time = 0;
+	CreateThread(NULL,0,ThreadProcA,&ThreadA_CD,0,&dwiTid);
+	FLAG_ThreadProcA = 1;
+		while(F){
+		//prepare_CD( CD_num ); //将?光a盘ì拼′接ó到?背?景°
+		//prepare_CD( 0 );
+		mouse=GetMouseMsg();
+		switch(mouse.uMsg){
+		case WM_LBUTTONDOWN:
+			if(mouse.x > 120 && mouse.x < 370 && mouse.y > 600 && mouse.y <690) if(F==1) Stop__Music(),F=2,FLAG_ThreadProcA = 2; else Resume__Music(),F=1,FLAG_ThreadProcA = 1 ; 
+
+			if(mouse.x > 500 && mouse.x < 750 && mouse.y > 600 && mouse.y <690) F=0,FLAG_ThreadProcA = 0,Put__ans(Ran_Num);
+		}
+		
+		Sleep(10);
+	 }
+	///////////////////////////////////////////////////////////////
+	Close__Music();
+	}
+	return 0;
+}
+void Put__Music( int number ){
+	switch(number){
+		case 0: mciSendString(TEXT("open Music\\追痢?光a者?.mp3 alias Music"), NULL, NULL, NULL);break;//打洙?开a音?乐?文?件t
+		case 1: mciSendString(TEXT("open Music\\起e风?了?周ü深?.mp3 alias Music"), NULL, NULL, NULL);break;//打洙?开a音?乐?文?件t
+		case 2: mciSendString(TEXT("open Music\\孤?勇?者?.mp3 alias Music"), NULL, NULL, NULL);break;//打洙?开a音?乐?文?件t
+		case 3: mciSendString(TEXT("open Music\\一?路·生Θ?花¨.mp3 alias Music"), NULL, NULL, NULL);break;//打洙?开a音?乐?文?件t
+		case 4: mciSendString(TEXT("open Music\\大洙?鱼?.mp3 alias Music"), NULL, NULL, NULL);break;//打洙?开a音?乐?文?件t
+		case 5: mciSendString(TEXT("open Music\\LoveStory.mp3 alias Music"), NULL, NULL, NULL);break;//打洙?开a音?乐?文?件t
+		case 6: mciSendString(TEXT("open Music\\Monsters.mp3 alias Music"), NULL, NULL, NULL);break;//打洙?开a音?乐?文?件t
+		case 7: mciSendString(TEXT("open Music\\RushE.mp3 alias Music"), NULL, NULL, NULL);break;//打洙?开a音?乐?文?件t
+		case 8: mciSendString(TEXT("open Music\\STAY.mp3 alias Music"), NULL, NULL, NULL);break;//打洙?开a音?乐?文?件t
+		case 9: mciSendString(TEXT("open Music\\SomethingJustLikeThis.mp3 alias Music"), NULL, NULL, NULL);break;//打洙?开a音?乐?文?件t
+		case 10: mciSendString(TEXT("open Music\\我ò们?都?是?追痢?梦?人?.mp3 alias Music"), NULL, NULL, NULL);break;//打洙?开a音?乐?文?件t
+		case 11: mciSendString(TEXT("open Music\\演Y员±.mp3 alias Music"), NULL, NULL, NULL);break;//打洙?开a音?乐?文?件t
+		case 12: mciSendString(TEXT("open Music\\说μ声Θ?你?好?.mp3 alias Music"), NULL, NULL, NULL);break;//打洙?开a音?乐?文?件t
+		case 13: mciSendString(TEXT("open Music\\以?无T旁?骛e之?吻?.mp3 alias Music"), NULL, NULL, NULL);break;//打洙?开a音?乐?文?件t
+		case 14: mciSendString(TEXT("open Music\\白恪?月?光a与?朱ì砂Α?痣?.mp3 alias Music"), NULL, NULL, NULL);break;//打洙?开a音?乐?文?件t
+	}
+	mciSendString(TEXT("play Music"), NULL, NULL, NULL);//播￥放?音?乐?
+}
+
+void Put__ans( int number ) //输?出?答鋏案?
+{
+	settextstyle(120,45,_T("宋?体?")); // 字?体?设Θ?置?
+	settextcolor(BLUE);
+	switch(number){
+		case 0: outtextxy(200,450,_T("追痢?光a者?" )); break;
+		case 1: outtextxy(200,450,_T("起e风?了?" )); break;
+		case 2: outtextxy(200,450,_T("孤?勇?者?" )); break;
+		case 3: outtextxy(200,450,_T("一?路·生Θ?花¨" )); break;
+		case 4: outtextxy(200,450,_T("大洙?鱼?" )); break;
+		case 5: outtextxy(200,450,_T("Love Story" )); break;
+		case 6: outtextxy(200,450,_T("Monsters" )); break;
+		case 7: outtextxy(200,450,_T("Rush E" )); break;
+		case 8: outtextxy(200,450,_T("STAY" )); break;
+		case 9: settextstyle(70,27,_T("宋?体?")); outtextxy(200,450,_T("Something Just Like This" )); break;
+		case 10: outtextxy(200,450,_T("我ò们?都?是?追痢?梦?人?" )); break;
+		case 11: outtextxy(200,450,_T("演Y员±" )); break;
+		case 12: outtextxy(200,450,_T("说μ声Θ?你?好?" )); break;
+		case 13: outtextxy(200,450,_T("以?无T旁?骛e之?吻?" )); break;
+		case 14: outtextxy(200,450,_T("白恪?月?光a与?朱ì砂Α?痣?" )); break;
+	}
+	MOUSEMSG mouse;
+	int F=1;
+	while(F){
+		mouse=GetMouseMsg();
+		switch(mouse.uMsg){
+			case WM_LBUTTONDOWN:
+				F=0;
+			}
+			Sleep(10);
+		}
+}
+
+void Close__Music()
+{mciSendString(TEXT("close Music"), NULL, NULL, NULL);}//关?闭?文?件t
+
+void Stop__Music()//暂Y停?音?乐?
+{mciSendString(TEXT("stop Music"), NULL, NULL, NULL);}
+
+void Resume__Music()//继ì续?音?乐?
+{mciSendString(TEXT("resume Music"), NULL, NULL, NULL);}
+
+int get_random_number(int l,int r)//生Θ?成él到?r随?机ú数簓
+{int number=rand()%(r+1)+l; if(vis[number]!=1){vis[number]=1;  return number;} for(int i=0;i<=14;i++)if(vis[i]!=1){vis[i]=1; return i;}}
+
+void init()
+{
+	memset(vis,0x3f,sizeof(vis));//初?始?化ˉvis数簓组哩?
+	srand((unsigned int)time(0));//初?始?化ˉ种?子哩?为a随?机ú值μ
+	cnt = sum; //设Θ?置?游?戏·局?数簓
+
+	initgraph(graph_w,graph_h,NOMINIMIZE);//绘?制?初?始?画-板?
+
+	setcolor(WHITE);//设Θ?置?背?景°色?
+
+	IMAGE setting_img;
+	loadimage(&setting_img,_T("Img//开a始?界?面?.png"),graph_w,graph_h);//加ó载?背?景°
+	putimage(0,0,&setting_img);//封面?背?景°
+	////////////////////////////////////////////////////////////////////绘?制?背?景°
+}
+
+void prepare()
+{
+	MOUSEMSG mouse;
+	int F=1;
+		while(F){
+		mouse=GetMouseMsg();
+		switch(mouse.uMsg){
+		case WM_LBUTTONDOWN:
+			if(mouse.x > 310 && mouse.x < 590 && mouse.y > 530 && mouse.y <640) F=0;
+		}
+		Sleep(10);
+	 }
+	 ////////////////////////////////////////////////////////////////////检ì测a是?否?开a始?
+
+}
+void prepare_CD( int number ){
+	IMAGE Cover_img,img2;//缓o存?
+	switch(number){
+		case 0: loadimage(&Cover_img,_T("Img//唱a片?1.png"),400,400); break;
+		case 1: loadimage(&Cover_img,_T("Img//唱a片?2.png"),479,833); break;
+		case 2: loadimage(&Cover_img,_T("Img//唱a片?3.png"),479,833); break;
+		case 3: loadimage(&Cover_img,_T("Img//唱a片?4.png"),479,833);  break;
+		case 4: loadimage(&Cover_img,_T("Img//唱a片?5.png"),479,833);  break;
+	}
+	double PI=3.1415926;
+	rotateimage(&img2, &Cover_img, PI / 50 * Time, BLUE ,0,0);	
+	putimage(0, 0, &img2);
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// 功|  能ü:放?置?CD 线?程ì
+// 参?  数簓:CD 编括?号?
+// 返う?回?值μ:无T
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+DWORD WINAPI ThreadProcA(LPVOID lpParameter){
+
+	while (FLAG_ThreadProcA){
+		if(FLAG_ThreadProcA == 1)	Time+=1; //游?戏·时骸?间?增?加ó
+		prepare_CD(*(PDWORD)lpParameter);
+
+		Sleep(20);
+	}
+	return 0;
+}
